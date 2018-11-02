@@ -1,12 +1,12 @@
-import React from 'react';
-import PropTypes from 'prop-types';
-import addEventListener from 'rc-util/lib/Dom/addEventListener';
-import classNames from 'classnames';
-import warning from 'warning';
-import Steps from './Steps';
-import Marks from './Marks';
-import Handle from '../Handle';
-import * as utils from '../utils';
+import React from "react";
+import PropTypes from "prop-types";
+import addEventListener from "rc-util/lib/Dom/addEventListener";
+import classNames from "classnames";
+import warning from "warning";
+import Steps from "./Steps";
+import Marks from "./Marks";
+import Handle from "../Handle";
+import * as utils from "../utils";
 
 function noop() {}
 
@@ -33,20 +33,27 @@ export default function createSlider(Component) {
       style: PropTypes.object,
       minimumTrackStyle: PropTypes.object, // just for compatibility, will be deperecate
       maximumTrackStyle: PropTypes.object, // just for compatibility, will be deperecate
-      handleStyle: PropTypes.oneOfType([PropTypes.object, PropTypes.arrayOf(PropTypes.object)]),
-      trackStyle: PropTypes.oneOfType([PropTypes.object, PropTypes.arrayOf(PropTypes.object)]),
+      handleStyle: PropTypes.oneOfType([
+        PropTypes.object,
+        PropTypes.arrayOf(PropTypes.object)
+      ]),
+      trackStyle: PropTypes.oneOfType([
+        PropTypes.object,
+        PropTypes.arrayOf(PropTypes.object)
+      ]),
       railStyle: PropTypes.object,
       dotStyle: PropTypes.object,
       activeDotStyle: PropTypes.object,
       autoFocus: PropTypes.bool,
       onFocus: PropTypes.func,
       onBlur: PropTypes.func,
+      useEqualDistance: PropTypes.bool
     };
 
     static defaultProps = {
       ...Component.defaultProps,
-      prefixCls: 'rc-slider',
-      className: '',
+      prefixCls: "rc-slider",
+      className: "",
       min: 0,
       max: 100,
       step: 1,
@@ -67,16 +74,17 @@ export default function createSlider(Component) {
       railStyle: {},
       dotStyle: {},
       activeDotStyle: {},
+      useEqualDistance: false
     };
 
     constructor(props) {
       super(props);
 
-      if (process.env.NODE_ENV !== 'production') {
+      if (process.env.NODE_ENV !== "production") {
         const { step, max, min } = props;
         warning(
           step && Math.floor(step) === step ? (max - min) % step === 0 : true,
-          'Slider[max] - Slider[min] (%s) should be a multiple of Slider[step] (%s)',
+          "Slider[max] - Slider[min] (%s) should be a multiple of Slider[step] (%s)",
           max - min,
           step
         );
@@ -94,24 +102,29 @@ export default function createSlider(Component) {
       this.removeDocumentEvents();
     }
 
-    onMouseDown = (e) => {
-      if (e.button !== 0) { return; }
+    onMouseDown = e => {
+      if (e.button !== 0) {
+        return;
+      }
 
       const isVertical = this.props.vertical;
       let position = utils.getMousePosition(isVertical, e);
       if (!utils.isEventFromHandle(e, this.handlesRefs)) {
         this.dragOffset = 0;
       } else {
-        const handlePosition = utils.getHandleCenterPosition(isVertical, e.target);
+        const handlePosition = utils.getHandleCenterPosition(
+          isVertical,
+          e.target
+        );
         this.dragOffset = position - handlePosition;
         position = handlePosition;
       }
       this.removeDocumentEvents();
       this.onStart(position);
       this.addDocumentMouseEvents();
-    }
+    };
 
-    onTouchStart = (e) => {
+    onTouchStart = e => {
       if (utils.isNotTouchEvent(e)) return;
 
       const isVertical = this.props.vertical;
@@ -119,19 +132,25 @@ export default function createSlider(Component) {
       if (!utils.isEventFromHandle(e, this.handlesRefs)) {
         this.dragOffset = 0;
       } else {
-        const handlePosition = utils.getHandleCenterPosition(isVertical, e.target);
+        const handlePosition = utils.getHandleCenterPosition(
+          isVertical,
+          e.target
+        );
         this.dragOffset = position - handlePosition;
         position = handlePosition;
       }
       this.onStart(position);
       this.addDocumentTouchEvents();
       utils.pauseEvent(e);
-    }
+    };
 
-    onFocus = (e) => {
+    onFocus = e => {
       const { onFocus, vertical } = this.props;
       if (utils.isEventFromHandle(e, this.handlesRefs)) {
-        const handlePosition = utils.getHandleCenterPosition(vertical, e.target);
+        const handlePosition = utils.getHandleCenterPosition(
+          vertical,
+          e.target
+        );
         this.dragOffset = 0;
         this.onStart(handlePosition);
         utils.pauseEvent(e);
@@ -139,9 +158,9 @@ export default function createSlider(Component) {
           onFocus(e);
         }
       }
-    }
+    };
 
-    onBlur = (e) => {
+    onBlur = e => {
       const { onBlur } = this.props;
       this.onEnd(e);
       if (onBlur) {
@@ -153,18 +172,18 @@ export default function createSlider(Component) {
       if (this.handlesRefs[this.prevMovedHandleIndex]) {
         this.handlesRefs[this.prevMovedHandleIndex].clickFocus();
       }
-    }
+    };
 
-    onMouseMove = (e) => {
+    onMouseMove = e => {
       if (!this.sliderRef) {
         this.onEnd();
         return;
       }
       const position = utils.getMousePosition(this.props.vertical, e);
       this.onMove(e, position - this.dragOffset);
-    }
+    };
 
-    onTouchMove = (e) => {
+    onTouchMove = e => {
       if (utils.isNotTouchEvent(e) || !this.sliderRef) {
         this.onEnd();
         return;
@@ -172,18 +191,18 @@ export default function createSlider(Component) {
 
       const position = utils.getTouchPosition(this.props.vertical, e);
       this.onMove(e, position - this.dragOffset);
-    }
+    };
 
-    onKeyDown = (e) => {
+    onKeyDown = e => {
       if (this.sliderRef && utils.isEventFromHandle(e, this.handlesRefs)) {
         this.onKeyboard(e);
       }
-    }
+    };
 
     onClickMarkLabel = (e, value) => {
       e.stopPropagation();
       this.onChange({ value });
-    }
+    };
 
     getSliderStart() {
       const slider = this.sliderRef;
@@ -204,13 +223,29 @@ export default function createSlider(Component) {
 
     addDocumentTouchEvents() {
       // just work for Chrome iOS Safari and Android Browser
-      this.onTouchMoveListener = addEventListener(this.document, 'touchmove', this.onTouchMove);
-      this.onTouchUpListener = addEventListener(this.document, 'touchend', this.onEnd);
+      this.onTouchMoveListener = addEventListener(
+        this.document,
+        "touchmove",
+        this.onTouchMove
+      );
+      this.onTouchUpListener = addEventListener(
+        this.document,
+        "touchend",
+        this.onEnd
+      );
     }
 
     addDocumentMouseEvents() {
-      this.onMouseMoveListener = addEventListener(this.document, 'mousemove', this.onMouseMove);
-      this.onMouseUpListener = addEventListener(this.document, 'mouseup', this.onEnd);
+      this.onMouseMoveListener = addEventListener(
+        this.document,
+        "mousemove",
+        this.onMouseMove
+      );
+      this.onMouseUpListener = addEventListener(
+        this.document,
+        "mouseup",
+        this.onEnd
+      );
     }
 
     removeDocumentEvents() {
@@ -231,7 +266,7 @@ export default function createSlider(Component) {
 
     blur() {
       if (!this.props.disabled) {
-        Object.keys(this.handlesRefs).forEach((key) => {
+        Object.keys(this.handlesRefs).forEach(key => {
           if (this.handlesRefs[key] && this.handlesRefs[key].blur) {
             this.handlesRefs[key].blur();
           }
@@ -240,10 +275,36 @@ export default function createSlider(Component) {
     }
 
     calcValue(offset) {
-      const { vertical, min, max } = this.props;
+      const { vertical, min, max, marks, useEqualDistance } = this.props;
       const ratio = Math.abs(Math.max(offset, 0) / this.getSliderLength());
-      const value = vertical ? (1 - ratio) * (max - min) + min : ratio * (max - min) + min;
+      const value = vertical
+        ? (1 - ratio) * (max - min) + min
+        : useEqualDistance
+          ? this.getClosestMarkByRatio(marks, ratio)
+          : ratio * (max - min) + min;
       return value;
+    }
+
+    /**
+     * Return the closest matching mark in the marks object
+     * based on the the ratio (touch | click offset / total length of marks slider)
+     * assuming all marks have equal distance from each other
+     * @param  {object} marks - props.marks
+     * @param  {number} ratio -.e.g. 0.15
+     * @return {number}
+     */
+    getClosestMarkByRatio(marks, ratio) {
+      const ratioToPercent = ratio * 100; // .e.g. 27.5
+      const marksCount = Object.keys(marks).length;
+      const distance = 100 / (marksCount - 1); // so if there are 5 marks, the distance between each should be 100/(5-1)= 25% of total slider length
+      const markBounds = Array(marksCount)
+        .fill(null)
+        .map((x, i) => i * distance); // [0, 14, 17, 24, 34] -> [0, 25, 50, 75, 100]
+      return Object.keys(marks)[
+        utils.findIndexOfMin(
+          markBounds.map(x => Math.abs(x - ratioToPercent))
+        )
+      ];
     }
 
     calcValueByPos(position) {
@@ -253,14 +314,15 @@ export default function createSlider(Component) {
     }
 
     calcOffset(value) {
-      const { min, max } = this.props;
-      const ratio = (value - min) / (max - min);
-      return ratio * 100;
+      const { marks } = this.props;
+      const i = Object.keys(marks).indexOf(value.toString());
+      const equalDistance = 100 / (Object.keys(marks).length - 1);
+      return equalDistance * i;
     }
 
-    saveSlider = (slider) => {
+    saveSlider = slider => {
       this.sliderRef = slider;
-    }
+    };
 
     saveHandle(index, handle) {
       this.handlesRefs[index] = handle;
@@ -284,6 +346,7 @@ export default function createSlider(Component) {
         railStyle,
         dotStyle,
         activeDotStyle,
+        useEqualDistance
       } = this.props;
       const { tracks, handles } = super.render();
 
@@ -291,7 +354,7 @@ export default function createSlider(Component) {
         [`${prefixCls}-with-marks`]: Object.keys(marks).length,
         [`${prefixCls}-disabled`]: disabled,
         [`${prefixCls}-vertical`]: vertical,
-        [className]: className,
+        [className]: className
       });
       return (
         <div
@@ -309,7 +372,7 @@ export default function createSlider(Component) {
             className={`${prefixCls}-rail`}
             style={{
               ...maximumTrackStyle,
-              ...railStyle,
+              ...railStyle
             }}
           />
           {tracks}
@@ -326,6 +389,7 @@ export default function createSlider(Component) {
             min={min}
             dotStyle={dotStyle}
             activeDotStyle={activeDotStyle}
+            useEqualDistance={useEqualDistance}
           />
           {handles}
           <Marks

@@ -30,6 +30,10 @@ ReactDOM.render(
       <Slider min={-10} marks={marks} step={null} onChange={log} defaultValue={20} />
     </div>
     <div style={style}>
+      <p>Slider with marks, `step=null` and `useEqualDistance=true`</p>
+      <Slider min={-10} marks={marks} step={null} useEqualDistance={true} onChange={log} defaultValue={20} />
+    </div>
+    <div style={style}>
       <p>Slider with marks and steps</p>
       <Slider dots min={-10} marks={marks} step={10} onChange={log} defaultValue={20} />
     </div>
