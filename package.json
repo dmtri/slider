@@ -1,6 +1,6 @@
 {
   "name": "@dmtrinh/rc-slider",
-  "version": "8.6.4",
+  "version": "8.6.5",
   "description": "Slider UI component for React",
   "keywords": [
     "react",
@@ -10,10 +10,10 @@
     "input",
     "range"
   ],
-  "homepage": "http://github.com/react-component/slider/",
+  "homepage": "https://github.com/dmtri/slider/tree/add_useEqualDistance_prop",
   "repository": {
     "type": "git",
-    "url": "git@github.com:react-component/slider.git"
+    "url": "git@github.com:dmtri/slider.git"
   },
   "bugs": {
     "url": "http://github.com/react-component/slider/issues"
