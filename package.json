@@ -1,5 +1,5 @@
 {
-  "name": "rc-slider",
+  "name": "@dmtrinh/rc-slider",
   "version": "8.6.3",
   "description": "Slider UI component for React",
   "keywords": [
