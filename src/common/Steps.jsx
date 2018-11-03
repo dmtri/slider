@@ -20,10 +20,11 @@ const calcPoints = (vertical, marks, dots, step, min, max) => {
 };
 
 const Steps = ({ prefixCls, vertical, marks, dots, step, included,
-  lowerBound, upperBound, max, min, dotStyle, activeDotStyle }) => {
+  lowerBound, upperBound, max, min, dotStyle, activeDotStyle, useEqualDistance }) => {
   const range = max - min;
-  const elements = calcPoints(vertical, marks, dots, step, min, max).map((point) => {
-    const offset = `${Math.abs(point - min) / range * 100}%`;
+  const equalDistance = 100 / (Object.keys(marks).length - 1);
+  const elements = calcPoints(vertical, marks, dots, step, min, max).map((point, index) => {
+    const offset = useEqualDistance ? `${equalDistance * index}%` : `${Math.abs(point - min) / range * 100}%`;
 
     const isActived = (!included && point === upperBound) ||
             (included && point <= upperBound && point >= lowerBound);
@@ -56,6 +57,7 @@ Steps.propTypes = {
   step: PropTypes.number,
   marks: PropTypes.object,
   vertical: PropTypes.bool,
+  useEqualDistance: PropTypes.bool,
 };
 
 export default Steps;
